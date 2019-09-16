@@ -26,63 +26,61 @@ orders_products (order_id, product_id, quantity)
 
 ## 3. Functionality Queries
 
-(1) Select the customer with the most products added
+(1) Select the 10 customers with the most products added
 
 ``
-SELECT customers.user_id  
+SELECT C.user_id, SUM(OP.quantity) AS purchase_num
 ``
 <br/>
 ``
-FROM products, customers, carts  
+FROM orders_products OP, customers C, orders O 
 ``
 <br/>
 ``
-WHERE customers.use_id = carts.customer_id and 
-	    carts.cart_id = products.cart_id  
+WHERE C.user_id = O.customer_id AND OP.order_id = O.order_id  
 ``
 <br/>
 ``
-GROUP BY cutomers.user_id  
+GROUP BY C.user_id  
 ``
 <br/>
 ``
-ORDER BY count(*) DESC  
+ORDER BY SUM(OP.quantity) DESC  
 ``
 <br/>
 ``
-LIMIT 1;  
-``
-<br/>
-
-(2) Select the best seller in terms of the number of sold products
-
-``
-SELECT sellers.user_id 
-``
-<br/>
-``
-FROM sellers, products
-``
-<br/>
-``
-WHERE sellers.user_id = products.seller_id and 
-     cart_id in (select cart_id from carts) 
-``
-<br/>
-``
-GROUP BY user_id
-``
-<br/>
-``
-ORDER BY count(*) DESC
-``
-<br/>
-``
-LIMIT 1;
+LIMIT 10;  
 ``
 <br/>
 
-(3) Select the customer whose products are most expensive after using coupons
+(2) Select the 10 best sellers in terms of the number of sold products
+
+``
+SELECT S.user_id, SUM(OP.quantity) AS sell_num
+``
+<br/>
+``
+FROM sellers S, products P, orders_products OP
+``
+<br/>
+``
+WHERE S.user_id = P.seller_id and P.product_id = OP.product_id 
+``
+<br/>
+``
+GROUP BY S.user_id
+``
+<br/>
+``
+ORDER BY SUM(OP.quantity) DESC
+``
+<br/>
+``
+LIMIT 10;
+``
+<br/>
+
+(3) Select the 10 customers whose products are most expensive after using coupons
 
 ``
 CREATE VIEW discounted_products AS(
@@ -97,8 +95,7 @@ FROM products, coupons, coupon_applied
 ``
 <br/>
 ``
-WHERE coupons.coupon_id = coupon_applied.coupon_id and 
-	   coupon_applied.product_id = products.product_id
+WHERE coupons.coupon_id = coupon_applied.coupon_id and coupon_applied.product_id = products.product_id
 );
 ``
 <br/>
@@ -135,33 +132,33 @@ UNION
 <br/>
 
 ``
-SELECT customers.user_id
+SELECT C.user_id
 ``
 <br/>
 ``
-FROM products, customers, carts, final_price
+FROM customers C, orders O, orders_products OP, final_price F
 ``
 <br/>
 ``
-WHERE customers.user_id = carts.customer_id and
+WHERE C.user_id = O.customer_id and
 ``
 <br/>
 ``
-	    carts.cart_id = products.cart_id and
+	    O.order_id = OP.order_id and
       ``
 <br/>
 ``
-	    products.product_id = final_price.product_id
+	    OP.product_id = F.product_id
       ``
 <br/>
 ``
-GROUP BY customers.user_id
+GROUP BY C.user_id
 ``
 <br/>
 ``
-ORDER BY sum(final_price.price) DESC
+ORDER BY SUM(F.price) DESC
 ``
 <br/>
 ``
-LIMIT 1;
+LIMIT 10;
 ``
