@@ -2,7 +2,7 @@
 
 ## 1. ER Diagram
 
-![](Part1_ER_Schema/Final.png)
+![](Part3_Final/Final.png)
 
 
 ## 2. Schema
