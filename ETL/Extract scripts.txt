@@ -1,0 +1,35 @@
+./bin/spark-shell
+:require <path_to_postgresql-42.0.0.jar>
+val url = "jdbc:postgresql://zp2197:rGXsjkDZZD@w4111.cisxo90blonu.us-east-1.rds.amazonaws.com/w4111"
+
+import java.util.Properties
+val connectionProperties = new Properties()
+connectionProperties.setProperty("Driver", "org.postgresql.Driver")
+
+val customers = "(select * from customers) as customers”
+val customersDf = spark.read.jdbc(url, customers, connectionProperties)
+customersDf.write.csv(“/customers.csv")
+
+val products = "(select * from products) as products”
+val productsDf = spark.read.jdbc(url, products, connectionProperties)
+productsDf.write.csv(“/products.csv")
+
+val orders = "(select * from orders) as orders”
+val ordersDf = spark.read.jdbc(url, orders, connectionProperties)
+ordersDf.write.csv(“/orders.csv")
+
+val sellers = "(select * from sellers) as sellers”
+val sellersDf = spark.read.jdbc(url, sellers, connectionProperties)
+sellersDf.write.csv(“/sellers.csv")
+
+val coupons = "(select * from coupons) as coupons”
+val couponsDf = spark.read.jdbc(url, coupons, connectionProperties)
+couponsDf.write.csv(“/coupons.csv")
+
+val coupon_applied = "(select * from coupon_applied) as coupon_applied”
+val coupon_appliedDf = spark.read.jdbc(url, coupon_applied, connectionProperties)
+coupon_appliedDf.write.csv(“/coupon_applied.csv")
+
+val orders_products = "(select * from orders_products) as orders_products”
+val orders_productsDf = spark.read.jdbc(url, orders_products, connectionProperties)
+orders_productsDf.write.csv(“/orders_products.csv")
